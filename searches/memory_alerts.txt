@@ -1,0 +1,9 @@
+index=infrastructure sourcetype=system_metrics MEMORY_METRIC 
+| rex field=_raw "memory_usage=(?<memory_usage>\d+\.\d+)" 
+| stats avg(memory_usage) as avg_memory by _time span=5m 
+| where avg_memory > 85
+| eval avg_memory = round(avg_memory, 2)
+| eval severity = case(
+    avg_memory > 95, "Critical",
+    avg_memory > 85, "Warning"
+)

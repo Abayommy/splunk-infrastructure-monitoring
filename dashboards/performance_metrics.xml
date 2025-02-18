@@ -1,0 +1,20 @@
+<dashboard>
+  <label>Performance Metrics</label>
+  <row>
+    <panel>
+      <title>Memory Usage Alerts</title>
+      <chart>
+        <search>
+          <query>index=infrastructure sourcetype=system_metrics MEMORY_METRIC 
+| rex field=_raw "memory_usage=(?<memory_usage>\d+\.\d+)" 
+| timechart span=5m avg(memory_usage) as "Memory Usage %"</query>
+          <earliest>-4h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Memory Usage (%)</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

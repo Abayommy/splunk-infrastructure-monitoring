@@ -1,0 +1,20 @@
+<dashboard>
+  <label>System Overview</label>
+  <row>
+    <panel>
+      <title>CPU Usage Trending</title>
+      <chart>
+        <search>
+          <query>index=infrastructure sourcetype=system_metrics CPU_METRIC 
+| rex field=_raw "cpu_usage=(?<cpu_usage>\d+\.\d+)" 
+| timechart span=5m avg(cpu_usage) as "Average CPU %" max(cpu_usage) as "Max CPU %"</query>
+          <earliest>-4h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">CPU Usage (%)</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

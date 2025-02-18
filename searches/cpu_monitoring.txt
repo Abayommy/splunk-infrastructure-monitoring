@@ -1,0 +1,5 @@
+index=infrastructure sourcetype=system_metrics CPU_METRIC 
+| rex field=_raw "cpu_usage=(?<cpu_usage>\d+\.\d+)" 
+| timechart span=5m avg(cpu_usage) as "Average CPU %" max(cpu_usage) as "Max CPU %"
+| eval "Average CPU %" = round('Average CPU %', 2)
+| eval "Max CPU %" = round('Max CPU %', 2)
