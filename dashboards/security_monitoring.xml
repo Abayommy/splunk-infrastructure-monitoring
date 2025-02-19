@@ -1,0 +1,41 @@
+<dashboard theme="dark">
+  <label>Security Monitoring Dashboard</label>
+  <description>Security metrics and threat detection monitoring</description>
+
+  <row>
+    <panel>
+      <title>Failed Login Attempts</title>
+      <chart>
+        <search>
+          <query>
+          index=infrastructure sourcetype=security_metrics LOGIN_ATTEMPT 
+          | stats count(eval(status="failed")) as failed_logins by _time span=1h
+          | timechart span=1h sum(failed_logins)
+          </query>
+          <earliest>-24h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>System Access Pattern Analysis</title>
+      <chart>
+        <search>
+          <query>
+          index=infrastructure sourcetype=system_metrics 
+          | stats count by source_ip user_id action
+          | sort - count
+          | head 10
+          </query>
+          <earliest>-24h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

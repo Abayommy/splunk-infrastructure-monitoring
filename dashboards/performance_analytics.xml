@@ -1,0 +1,22 @@
+<dashboard theme="dark">
+  <label>Advanced Performance Analytics</label>
+  <description>Deep dive performance analysis and correlations</description>
+
+  <row>
+    <panel>
+      <title>Resource Usage Correlation</title>
+      <chart>
+        <search>
+          <query>
+          index=infrastructure sourcetype=system_metrics 
+          | stats avg(cpu_usage) as cpu avg(memory_usage) as mem avg(disk_io) as io 
+          | eval correlation=correlation(cpu,mem)
+          </query>
+          <earliest>-7d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">scatter</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
