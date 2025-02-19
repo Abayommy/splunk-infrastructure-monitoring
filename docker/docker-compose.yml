@@ -1,0 +1,6 @@
+services:
+  app-server:
+    image: python:3.9-slim
+    volumes:
+      - ./app:/app
+    command: python /app/generate_logs.py

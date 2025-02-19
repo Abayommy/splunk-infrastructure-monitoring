@@ -1,0 +1,13 @@
+index=infrastructure sourcetype=system_metrics 
+| stats 
+    avg(cpu_usage) as avg_cpu 
+    avg(memory_usage) as avg_mem 
+    avg(disk_usage) as avg_disk 
+    avg(response_time) as avg_response
+    by _time span=5m 
+| eval status = case(
+    avg_cpu > 90 OR avg_mem > 90 OR avg_disk > 90, "Critical",
+    avg_cpu > 80 OR avg_mem > 80 OR avg_disk > 80, "Warning",
+    1=1, "Healthy"
+)
+| stats count by status

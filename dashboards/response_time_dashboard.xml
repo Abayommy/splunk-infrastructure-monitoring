@@ -1,0 +1,24 @@
+<dashboard>
+  <label>Response Time Analysis</label>
+  <row>
+    <panel>
+      <title>Application Response Time Trending</title>
+      <chart>
+        <search>
+          <query>
+          index=infrastructure sourcetype=system_metrics RESPONSE_METRIC 
+          | rex field=_raw "response_time=(?<response_time>\d+\.\d+)" 
+          | timechart span=5m avg(response_time) as "Average Response Time" max(response_time) as "Max Response Time"
+          | eval "Average Response Time" = round('Average Response Time', 2)
+          | eval "Max Response Time" = round('Max Response Time', 2)
+          </query>
+          <earliest>-4h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Response Time (seconds)</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
