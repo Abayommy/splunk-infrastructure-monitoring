@@ -1,0 +1,6 @@
+| tstats avg(cpu_usage) as avg_cpu, 
+         avg(memory_usage) as avg_mem,
+         avg(disk_usage) as avg_disk
+         from datamodel=Infrastructure 
+         by _time span=1h
+| predict avg_cpu avg_mem future_timespan=24

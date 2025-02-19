@@ -1,0 +1,102 @@
+<dashboard theme="dark">
+  <label>Capacity Planning Dashboard</label>
+  <description>Comprehensive view of system capacity and resource utilization trends</description>
+
+  <row>
+    <panel>
+      <title>CPU Utilization Forecast</title>
+      <chart>
+        <search>
+          <query>
+          index=infrastructure sourcetype=system_metrics CPU_METRIC 
+          | timechart span=1h avg(cpu_usage) as "CPU Usage"
+          | predict "CPU Usage" future_timespan=24 upper95=upper lower95=lower
+          | eval "Forecast" = 'CPU Usage_prediction'
+          | eval "Upper Bound" = upper
+          | eval "Lower Bound" = lower
+          | fields _time "CPU Usage" Forecast "Upper Bound" "Lower Bound"
+          </query>
+          <earliest>-7d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">CPU Usage (%)</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Memory Growth Trend</title>
+      <chart>
+        <search>
+          <query>
+          index=infrastructure sourcetype=system_metrics MEMORY_METRIC 
+          | timechart span=1h avg(memory_usage) as Memory
+          | predict Memory future_timespan=24
+          | eval "Warning Threshold" = 80
+          | eval "Critical Threshold" = 90
+          </query>
+          <earliest>-7d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Memory Usage (%)</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Disk Space Projection</title>
+      <chart>
+        <search>
+          <query>
+          index=infrastructure sourcetype=system_metrics DISK_METRIC 
+          | timechart span=1h avg(disk_usage) as "Disk Usage"
+          | predict "Disk Usage" future_timespan=72 algorithm=LLP
+          | eval "Risk Level" = case(
+              'Disk Usage' > 90, "Critical",
+              'Disk Usage' > 80, "Warning",
+              true(), "Normal"
+          )
+          </query>
+          <earliest>-7d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Disk Usage (%)</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Resource Utilization Summary</title>
+      <table>
+        <search>
+          <query>
+          index=infrastructure sourcetype=system_metrics 
+          | stats avg(cpu_usage) as avg_cpu 
+                 max(cpu_usage) as max_cpu 
+                 avg(memory_usage) as avg_mem 
+                 max(memory_usage) as max_mem 
+                 avg(disk_usage) as avg_disk 
+                 max(disk_usage) as max_disk
+          | eval avg_cpu=round(avg_cpu,2)
+          | eval max_cpu=round(max_cpu,2)
+          | eval avg_mem=round(avg_mem,2)
+          | eval max_mem=round(max_mem,2)
+          | eval avg_disk=round(avg_disk,2)
+          | eval max_disk=round(max_disk,2)
+          </query>
+          <earliest>-24h</earliest>
+          <latest>now</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+</dashboard>
