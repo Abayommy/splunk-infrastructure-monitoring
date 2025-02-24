@@ -1,0 +1,19 @@
+<dashboard theme="dark">
+  <label>Test Auto-Update Dashboard</label>
+  <row>
+    <panel>
+      <title>Test Panel</title>
+      <chart>
+        <search>
+          <query>
+          | makeresults count=3
+          | streamstats count
+          | eval metric=random()%100
+          | fields count metric
+          </query>
+        </search>
+        <option name="charting.chart">line</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
