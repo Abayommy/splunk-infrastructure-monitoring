@@ -1,0 +1,13 @@
+<search>
+  <query>
+  index=infrastructure sourcetype=system_metrics CPU_METRIC 
+  | timechart span=1h avg(cpu_usage) as "CPU Usage"
+  | predict "CPU Usage" future_timespan=24 algorithm=LLP upper95=upper lower95=lower
+  | eval "Forecast" = 'CPU Usage_prediction'
+  | eval "Upper Bound" = upper
+  | eval "Lower Bound" = lower
+  | fields _time "CPU Usage" Forecast "Upper Bound" "Lower Bound"
+  </query>
+  <earliest>-7d@h</earliest>
+  <latest>now</latest>
+</search>
