@@ -1,0 +1,5 @@
+[system_metrics]
+REPORT-cpu = cpu_extraction
+REPORT-memory = memory_extraction
+REPORT-disk = disk_extraction
+ACCELERATE_CHECKTPOINTING = true
